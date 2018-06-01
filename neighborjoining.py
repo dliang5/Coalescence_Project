@@ -41,8 +41,8 @@ def neighborJoining(targetList, priorList, divergences, formedBranches):
     for rowIndex, rowKey in enumerate(targetList): 
         for colIndex, colKey in enumerate(targetList): 
             # leaving them at 0.
-            if rowKey == colKey: 
-                break 
+            # if rowKey == colKey: 
+            #     break 
 
             # storing the information 
             if smallest > targetList[rowKey][colIndex]: 
@@ -53,12 +53,11 @@ def neighborJoining(targetList, priorList, divergences, formedBranches):
                 smallestColPos = colIndex
     
     # found the position and their keys to combine
-    print("combining {} {} and d({}{}) = {}".format(smallestRowPosLet, smallestColPosLet, 
-                                                    smallestRowPosLet, smallestColPosLet,
-                                                    smallest))
+    # print("combining {} {} and d({}{}) = {}".format(smallestRowPosLet, smallestColPosLet, 
+    #                                                 smallestRowPosLet, smallestColPosLet,
+    #                                                 smallest))
     
     # reiterating to get a new value for the new dict/branch/neighbor
-    newNeighbor = dict()
     formedBranches.append(smallestColPosLet)
     formedBranches.append(smallestRowPosLet)
 
@@ -70,8 +69,8 @@ def neighborJoining(targetList, priorList, divergences, formedBranches):
     branchLen1 = math.floor(abs(branchLen1))
     branchLen2 = (priorList[smallestRowPosLet][smallestColPos]) - branchLen1
 
-    print("this is S({}U) = {}, this is S({}U) = {}".format(smallestRowPosLet, branchLen1, 
-                                                            smallestColPosLet, branchLen2))
+    # print("this is S({}U) = {}, this is S({}U) = {}".format(smallestRowPosLet, branchLen1, 
+    #                                                         smallestColPosLet, branchLen2))
     
     # deleting all information related to the two branches
     # conditional to delete the furtherest one atm  because it will move one back if i delete the earliest on
@@ -92,14 +91,33 @@ def neighborJoining(targetList, priorList, divergences, formedBranches):
     del targetList[smallestColPosLet]
     del targetList[smallestRowPosLet]
 
-    # modifying the dictionary with the new branch, newNeighbor
-    for entryIndex, entryKey in enumerate(targetList):
-        
+    # initalizing a new dictionary and list.
+    newNeighborName = smallestColPosLet + smallestRowPosLet
+    # newNeighbor[newNeighborName] = [0] * (len(targetList) - 2)
+    targetList[newNeighborName] = list()
+    # (unoptimized) modifying the dictionary with the new branch, newNeighbor
+    for rowIndex, rowKey in enumerate(targetList):
+        entry = 0 
+        if rowKey != newNeighborName:
+            entry = ( (priorList[rowKey][smallestRowPos] + priorList[rowKey][smallestColPos]) - \
+                    priorList[smallestRowPosLet][smallestColPos]) / 2
 
+            # print("{} {} {}".format(priorList[rowKey][smallestRowPos], priorList[rowKey][smallestColPos], 
+            #                         priorList[smallestRowPosLet][smallestColPos]))
 
-    
+            # print("d({}U) = d({}{}) + d({}{}) - d({}{}) / 2 = {}".format(rowKey, smallestRowPosLet, rowKey,
+            #                                                             smallestColPosLet, rowKey, 
+            #                                                             smallestRowPosLet, smallestColPosLet,
+            #                                                             entry))
+        # remmeber TODO: think about the placement of the new branch because I have no idea where LOL 
+        # right now it is selected at the back so it's going to be mess as hell 
+        targetList[newNeighborName].append(entry)
+        if rowKey != newNeighborName:
+            targetList[rowKey].append(entry)
 
     printMatrices(targetList)
+
+
 # step 2 of the algorithm 
 # calculate a new distance matrix using each pair 
 # M(ij) = d(ij) - [r(i) + r(j)] / (n - 2) 
@@ -183,9 +201,7 @@ def printMatrices(targetList):
         currentRow += tempValue
         print(currentRow) 
 
-    # fixing the spacing here
-    print("\n")         
-
+    
 def main():
 
     sample = {'A': "TTGACCAGACCTGTGGTCCG",
