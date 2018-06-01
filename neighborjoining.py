@@ -57,10 +57,6 @@ def neighborJoining(targetList, priorList, divergences, formedBranches):
     #                                                 smallestRowPosLet, smallestColPosLet,
     #                                                 smallest))
     
-    # reiterating to get a new value for the new dict/branch/neighbor
-    formedBranches.append(smallestColPosLet)
-    formedBranches.append(smallestRowPosLet)
-
     # getting the 2 branch lengths from smallestColPosLet and smallestRowPos to new branch U
     # S(AU) =d(AB) / 2 + [r(A)-r(B)] / 2(N-2) = 1 
     # S(BU) =d(AB) -S(AU) = 4
@@ -71,9 +67,11 @@ def neighborJoining(targetList, priorList, divergences, formedBranches):
 
     # print("this is S({}U) = {}, this is S({}U) = {}".format(smallestRowPosLet, branchLen1, 
     #                                                         smallestColPosLet, branchLen2))
-    
+
+
     # deleting all information related to the two branches
     # conditional to delete the furtherest one atm  because it will move one back if i delete the earliest on
+    newList = deepcopy(priorList)
     firstDel = 0
     secondDel = 0 
     if smallestColPos > smallestRowPos:
@@ -83,20 +81,26 @@ def neighborJoining(targetList, priorList, divergences, formedBranches):
         firstDel = smallestRowPos 
         secondDel = smallestColPos
 
-    for key in targetList:
-        del targetList[key][firstDel]
-        del targetList[key][secondDel]
+    for key in newList:
+        del newList[key][firstDel]
+        del newList[key][secondDel]
 
     # now the current dictionary is going to be changed here
-    del targetList[smallestColPosLet]
-    del targetList[smallestRowPosLet]
+    del newList[smallestColPosLet]
+    del newList[smallestRowPosLet]
 
     # initalizing a new dictionary and list.
     newNeighborName = smallestColPosLet + smallestRowPosLet
-    # newNeighbor[newNeighborName] = [0] * (len(targetList) - 2)
-    targetList[newNeighborName] = list()
+
+    # creating a list of where all the branches point to
+    # [combinedBranch, self.branch, branchLength]
+    formedBranches[smallestColPosLet] = [newNeighborName, smallestColPosLet, branchLen2]
+    formedBranches[smallestRowPosLet] = [newNeighborName, smallestRowPosLet,branchLen1]
+
+    # newNeighbor[newNeighborName] = [0] * (len(newList) - 2)
+    newList[newNeighborName] = list()
     # (unoptimized) modifying the dictionary with the new branch, newNeighbor
-    for rowIndex, rowKey in enumerate(targetList):
+    for rowIndex, rowKey in enumerate(newList):
         entry = 0 
         if rowKey != newNeighborName:
             entry = ( (priorList[rowKey][smallestRowPos] + priorList[rowKey][smallestColPos]) - \
@@ -111,11 +115,11 @@ def neighborJoining(targetList, priorList, divergences, formedBranches):
             #                                                             entry))
         # remmeber TODO: think about the placement of the new branch because I have no idea where LOL 
         # right now it is selected at the back so it's going to be mess as hell 
-        targetList[newNeighborName].append(entry)
+        newList[newNeighborName].append(entry)
         if rowKey != newNeighborName:
-            targetList[rowKey].append(entry)
+            newList[rowKey].append(entry)
 
-    printMatrices(targetList)
+    printMatrices(newList)
 
 
 # step 2 of the algorithm 
@@ -222,7 +226,7 @@ def main():
     
     # printMatrices(sampleRatio)
 
-    formedBranches = list() 
+    formedBranches = dict()
     divergences = convertR2Divergence(sampleRatio) 
     nextRatio, sampleRatio = distanceMatrix(sampleRatio, divergences)
     # printMatrices(nextRatio)
