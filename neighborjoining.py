@@ -17,8 +17,10 @@
     2. optimize the search in the other functions
     3. create a pattern for the list pattern and create a picture of the tree somehow
 
-    Disclaimer: I have not yet ran this program so make sure to debug this once you get the information
-
+    Concerns and Disclaimer: 
+    1. This algorithm is very biased towards whoever is the smallest first
+        because of this, it is sub-optimal to the actual optimal one as it does not necessarily produce the correct "lineage" which may
+        be of some concern
 """
 import sys, os, math
 from copy import deepcopy
@@ -45,6 +47,7 @@ def neighborJoining(targetList, priorList, divergences, formedBranches):
             #     break 
 
             # storing the information 
+            # i should probably go 
             if smallest > targetList[rowKey][colIndex]: 
                 smallest = targetList[rowKey][colIndex] 
                 smallestRowPos = rowIndex
@@ -53,9 +56,9 @@ def neighborJoining(targetList, priorList, divergences, formedBranches):
                 smallestColPos = colIndex
     
     # found the position and their keys to combine
-    # print("combining {} {} and d({}{}) = {}".format(smallestRowPosLet, smallestColPosLet, 
-    #                                                 smallestRowPosLet, smallestColPosLet,
-    #                                                 smallest))
+    print("combining {} {} and d({}{}) = {}".format(smallestRowPosLet, smallestColPosLet, 
+                                                    smallestRowPosLet, smallestColPosLet,
+                                                    smallest))
     
     # getting the 2 branch lengths from smallestColPosLet and smallestRowPos to new branch U
     # S(AU) =d(AB) / 2 + [r(A)-r(B)] / 2(N-2) = 1 
@@ -120,7 +123,7 @@ def neighborJoining(targetList, priorList, divergences, formedBranches):
             newList[rowKey].append(entry)
 
     printMatrices(newList)
-
+    return newList
 
 # step 2 of the algorithm 
 # calculate a new distance matrix using each pair 
@@ -163,29 +166,25 @@ def convertR2Divergence(targetList):
 # this is assuming the user returns a sequence matrix
 def creatingRatio(sample): 
     # # honestly being lazy just making this as easy and long as possible LOL 
-    # newSample = dict()
-    # # initializing the dictionary here 
-    # for k, v in sample.iteritems():
-    #     newSample[k] = list()
-    # # reading each key, then creating the ratio of the letters
-    # for k, v in sample.iteritems(): 
-    #     # comparing each sample[key] to the others as well
-    #     for key in sample: 
-    #         if k == key: 
-    #             # setting a None for all matching keys
-    #             newSample[k].append(None)
-    #         else: 
-    #             # now comparing the sequences
-    #             result = None
-    #             for i in range(0,len(v)):
-    #                 if v[i] != (newSample[key])[i]:
-    #                     result += 1
-                
-    #             # result = the ratio of non-matching / length of sequence
-    #             result = (result / len(v))  
-    #             newSample[k].append(result)
-    # return newSample
-    return 0
+    newSample = dict()
+    # initializing the dictionary here 
+    for k, v in sample.items():
+        newSample[k] = list()
+
+    for key in sample: 
+        for secKey in sample: 
+            if key == secKey:
+                newSample[key].append(0)
+            else: 
+                result = 0 
+                for i in range(0, len(sample[key])): 
+                    if sample[key][i] != sample[secKey][i]:
+                        result += 1
+                result = result / len(sample[key])
+                newSample[key].append(result)
+
+    printMatrices(newSample)
+    return newSample
 
 # this prints out the current state of the matrices
 # prints them out in tab delimited form to make it easier to read
@@ -221,18 +220,17 @@ def main():
                    'D': [7, 10, 7, 0, 5, 9],
                    'E': [6, 9, 6, 5, 0, 8],
                    'F': [8, 11, 8, 9, 8, 0]}
-    if sys.stdin: 
-        sample = sys.stdin
-    
+
     # printMatrices(sampleRatio)
+
+    creatingRatio(sample)
 
     formedBranches = dict()
-    divergences = convertR2Divergence(sampleRatio) 
-    nextRatio, sampleRatio = distanceMatrix(sampleRatio, divergences)
-    # printMatrices(nextRatio)
-    # printMatrices(sampleRatio)
-
-    neighborJoining(nextRatio, sampleRatio, divergences, formedBranches)
+    n = len(sampleRatio)
+    for i in range(0, n-2):
+        divergences = convertR2Divergence(sampleRatio) 
+        nextRatio, sampleRatio = distanceMatrix(sampleRatio, divergences)
+        sampleRatio = neighborJoining(nextRatio, sampleRatio, divergences, formedBranches)
     
 if __name__ == "__main__":
     main()
@@ -241,5 +239,5 @@ if __name__ == "__main__":
 """
 Documentation down here: 
 1. http://www.deduveinstitute.be/~opperd/private/neighbor.html for how it works in example 
-2. 
+2. http://www.srmuniv.ac.in/sites/default/files/files/3(5).pdf
 """
