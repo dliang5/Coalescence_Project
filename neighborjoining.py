@@ -72,8 +72,20 @@ def neighborJoining(sample):
 # or == M(AB) = 5 - [30 + 42] / (6 - 2) == -13
 # return a new dictionary with the negative values
 def distanceMatrix(targetList): 
-    for key, value in targetList.items():
-        for i in range(0, len(value)): 
+    divergences = convertR2Divergence(targetList) 
+    n = len(targetList) 
+    for rowIndex, rowKey in enumerate(targetList): 
+        # looping through the list, this is where O(n^3) comes in.
+        for colIndex, colKey in enumerate(targetList): 
+            if rowIndex == colIndex: 
+                targetList[rowKey][colIndex] = 0 
+                continue
+
+            # assuming this is after diagonal values
+            value = targetList[rowKey][colIndex] - ((divergences[rowKey] + divergences[colKey]) / (n-2))  
+            targetList[rowKey][colIndex] = value
+
+    printMatrices(targetList)
             
 # step 1 of the algorithm
 # as the name mentions, it is to convert the divergence of each key 
@@ -123,7 +135,7 @@ def main():
         sample = sys.stdin
     
     # printMatrices(sampleRatio)
-    neighborJoining(sampleRatio)
+    distanceMatrix(sampleRatio)
 
 if __name__ == "__main__":
     main()

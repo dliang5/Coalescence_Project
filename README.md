@@ -49,11 +49,19 @@ Disorganized but these are the ones I have been using to help me with this proje
 9. Neighborhood joining tree and bed files 
 10. bed files
 11. to 15. More information on neighbor joining tree and why they could be used at O(n^3) instead of O(n^5) 
+    1. http://www.deduveinstitute.be/~opperd/private/neighbor.html for guideline and reference
+    2. scikit-bio.org/docs/0.2.1/generated/skbio.tree.nj.html
+    3. https://biopython.org/wiki/Phylo
+    4. http://telliott99.blogspot.com/2010/11/neighbor-joining.html
+    5. www.srmuniv.ac.in/sites/default/files/files/3(5).pdf this is a great information on a step by step case of how it works
+    6. 
 
 # Note
 1. There are three files in this directory: 
     1. numpy_nj.py
     2. distancetree.py
     3. distance_matrix.txt 
+    4. citation: https://github.com/JoshuaDavid/Neighbor_Joining 
+        1. I do think it seems kind of wrong to the other sources because the tree produced doesn't look correct or I'm really tired right now.
 2. They are other files from other people just a sanity check for my sake as I attempt to build the algorithm from scratch and understand what might be wrong
     1. Also, I can't run the files if anyone is wondering and would require so much work to make it work which I might as well learn how to build the algorithm myself.
