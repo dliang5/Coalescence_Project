@@ -16,11 +16,13 @@
         2. Rationale: because there could be over 1k individual genomes (ex. Drosophila mel)
     2. optimize the search in the other functions
     3. create a pattern for the list pattern and create a picture of the tree somehow
+    4. make sure the branch length is correct with the example online 
 
     Concerns and Disclaimer: 
     1. This algorithm is very biased towards whoever is the smallest first
         because of this, it is sub-optimal to the actual optimal one as it does not necessarily produce the correct "lineage" which may
         be of some concern
+    2. my branch length may be off so I gotta double check on that later on 
 """
 import sys, os, math
 from copy import deepcopy
@@ -122,7 +124,7 @@ def neighborJoining(targetList, priorList, divergences, formedBranches):
         if rowKey != newNeighborName:
             newList[rowKey].append(entry)
 
-    printMatrices(newList)
+    # printMatrices(newList)
     return newList
 
 # step 2 of the algorithm 
@@ -183,7 +185,7 @@ def creatingRatio(sample):
                 result = result / len(sample[key])
                 newSample[key].append(result)
 
-    printMatrices(newSample)
+    # printMatrices(newSample)
     return newSample
 
 # this prints out the current state of the matrices
@@ -204,6 +206,10 @@ def printMatrices(targetList):
         currentRow += tempValue
         print(currentRow) 
 
+# creating the pattern to the branches 
+def branchArt(branches): 
+    for key in branches: 
+        print(key, branches[key])
     
 def main():
 
@@ -222,7 +228,6 @@ def main():
                    'F': [8, 11, 8, 9, 8, 0]}
 
     # printMatrices(sampleRatio)
-
     creatingRatio(sample)
 
     formedBranches = dict()
@@ -231,7 +236,8 @@ def main():
         divergences = convertR2Divergence(sampleRatio) 
         nextRatio, sampleRatio = distanceMatrix(sampleRatio, divergences)
         sampleRatio = neighborJoining(nextRatio, sampleRatio, divergences, formedBranches)
-    
+
+    branchArt(formedBranches)
 if __name__ == "__main__":
     main()
 
